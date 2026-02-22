@@ -8,7 +8,6 @@ import { getAuthenticatedUser } from "@/lib/auth";
 interface CheckEmailPageProps {
   searchParams: Promise<{
     email?: string | string[];
-    debug?: string | string[];
   }>;
 }
 export default async function CheckEmailPage({
@@ -23,10 +22,6 @@ export default async function CheckEmailPage({
     typeof resolvedSearchParams.email === "string"
       ? resolvedSearchParams.email
       : currentUser?.email || "";
-  const debugUrl =
-    typeof resolvedSearchParams.debug === "string"
-      ? resolvedSearchParams.debug
-      : null;
   return (
     <div className="min-h-screen">
       <SiteHeader />
@@ -46,19 +41,6 @@ export default async function CheckEmailPage({
             </span>
             . Open that link to activate your account.
           </p>
-          {debugUrl ? (
-            <p className="mt-4 rounded-lg border border-brand/15 bg-surface-soft px-3 py-2 text-xs text-muted">
-              Dev link:
-              <a
-                href={debugUrl}
-                className="font-semibold text-brand underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                open verification link
-              </a>
-            </p>
-          ) : null}
           <div className="mt-6 rounded-2xl border border-brand/15 bg-surface-soft p-4">
             <h2 className="inline-flex items-center gap-2 text-base font-semibold text-brand">
               <ShieldCheck className="h-4 w-4 text-accent" /> Didn&apos;t

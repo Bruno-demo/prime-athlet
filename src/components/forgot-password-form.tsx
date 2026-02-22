@@ -5,14 +5,12 @@ import { KeyRound, LoaderCircle, Mail } from "lucide-react";
 interface ForgotPasswordResponse {
   error?: string;
   message?: string;
-  debugUrl?: string;
 }
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [debugUrl, setDebugUrl] = useState<string | null>(null);
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) {
@@ -21,7 +19,6 @@ export function ForgotPasswordForm() {
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessMessage(null);
-    setDebugUrl(null);
     try {
       const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -37,9 +34,6 @@ export function ForgotPasswordForm() {
         body.message ||
           "If an account exists, a password reset email has been sent.",
       );
-      if (body.debugUrl) {
-        setDebugUrl(body.debugUrl);
-      }
     } catch {
       setErrorMessage("Could not send reset email.");
     } finally {
@@ -81,19 +75,6 @@ export function ForgotPasswordForm() {
         {successMessage ? (
           <p className="status-success rounded-lg px-3 py-2 text-sm">
             {successMessage}
-          </p>
-        ) : null}
-        {debugUrl ? (
-          <p className="rounded-lg border border-brand/15 bg-surface-soft px-3 py-2 text-xs text-muted">
-            Dev link:
-            <a
-              href={debugUrl}
-              className="font-semibold text-brand underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              open reset link
-            </a>
           </p>
         ) : null}
         <button

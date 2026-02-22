@@ -7,7 +7,6 @@ interface ResendVerificationFormProps {
 interface ResendResponsePayload {
   error?: string;
   message?: string;
-  debugUrl?: string;
 }
 export function ResendVerificationForm({
   initialEmail,
@@ -16,7 +15,6 @@ export function ResendVerificationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [debugUrl, setDebugUrl] = useState<string | null>(null);
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting) {
@@ -25,7 +23,6 @@ export function ResendVerificationForm({
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessMessage(null);
-    setDebugUrl(null);
     try {
       const response = await fetch("/api/auth/resend-verification", {
         method: "POST",
@@ -41,9 +38,6 @@ export function ResendVerificationForm({
         body.message ||
           "If an account exists, a verification email has been sent.",
       );
-      if (body.debugUrl) {
-        setDebugUrl(body.debugUrl);
-      }
     } catch {
       setErrorMessage("Unable to resend verification email.");
     } finally {
@@ -73,19 +67,6 @@ export function ResendVerificationForm({
       {successMessage ? (
         <p className="status-success rounded-lg px-3 py-2 text-sm">
           {successMessage}
-        </p>
-      ) : null}
-      {debugUrl ? (
-        <p className="rounded-lg border border-brand/15 bg-surface-soft px-3 py-2 text-xs text-muted">
-          Dev link:
-          <a
-            href={debugUrl}
-            className="font-semibold text-brand underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            open verification link
-          </a>
         </p>
       ) : null}
       <button

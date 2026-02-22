@@ -15,7 +15,6 @@ interface AuthResponsePayload {
   requiresTwoFactor?: boolean;
   setupRequired?: boolean;
   email?: string;
-  debugUrl?: string;
 }
 export function AuthForm({ mode, nextPath }: AuthFormProps) {
   const router = useRouter();
@@ -30,7 +29,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
   const [verificationNotice, setVerificationNotice] = useState<string | null>(
     null,
   );
-  const [debugUrl, setDebugUrl] = useState<string | null>(null);
   const formCopy = useMemo(
     () =>
       mode === "sign-in"
@@ -70,7 +68,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
     setIsResending(true);
     setErrorMessage(null);
     setVerificationNotice(null);
-    setDebugUrl(null);
     try {
       const response = await fetch("/api/auth/resend-verification", {
         method: "POST",
@@ -83,9 +80,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
         return;
       }
       setVerificationNotice("Verification email sent. Check your inbox.");
-      if (body.debugUrl) {
-        setDebugUrl(body.debugUrl);
-      }
     } catch {
       setErrorMessage("Could not resend verification email.");
     } finally {
@@ -100,7 +94,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
     setIsSubmitting(true);
     setErrorMessage(null);
     setVerificationNotice(null);
-    setDebugUrl(null);
     try {
       const normalizedEmail = email.trim();
       const payload: Record<string, string> = {
@@ -142,9 +135,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
         const query = new URLSearchParams({
           email: body.email || normalizedEmail,
         });
-        if (body.debugUrl) {
-          query.set("debug", body.debugUrl);
-        }
         router.push(`/auth/check-email?${query.toString()}`);
         router.refresh();
         return;
@@ -287,19 +277,6 @@ export function AuthForm({ mode, nextPath }: AuthFormProps) {
         {verificationNotice ? (
           <p className="status-warning rounded-lg px-3 py-2 text-sm">
             {verificationNotice}
-          </p>
-        ) : null}
-        {debugUrl ? (
-          <p className="rounded-lg border border-brand/15 bg-surface-soft px-3 py-2 text-xs text-muted">
-            Dev link:
-            <a
-              href={debugUrl}
-              className="font-semibold text-brand underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              open link
-            </a>
           </p>
         ) : null}
         <button
