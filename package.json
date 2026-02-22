@@ -18,6 +18,8 @@
     "qa:viewport": "node scripts/run-viewport-qa.mjs",
     "qa:viewport:auth": "node scripts/run-auth-viewport-qa.mjs",
     "protect:branch": "powershell -ExecutionPolicy Bypass -File scripts/enforce-branch-protection.ps1",
+    "git:sync": "node scripts/git-sync.mjs",
+    "hooks:enable": "git config core.hooksPath .githooks",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium"

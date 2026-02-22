@@ -1,0 +1,14 @@
+#!/bin/sh
+
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+if [ -z "$branch" ] || [ "$branch" = "HEAD" ]; then
+  exit 0
+fi
+
+if ! git remote get-url origin >/dev/null 2>&1; then
+  echo "[post-commit] No origin remote configured. Skipping auto-push."
+  exit 0
+fi
+
+echo "[post-commit] Auto-pushing $branch..."
+git push origin "$branch"
