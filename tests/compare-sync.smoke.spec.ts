@@ -60,6 +60,67 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function createCompareSmokeProductId(): string {
+  return `compare-smoke-${Date.now().toString(36)}`;
+}
+
+async function insertCompareSmokeProductInMongo(): Promise<{
+  id: string;
+  name: string;
+}> {
+  const mongoDbName = process.env.MONGODB_DB;
+  if (!mongoDbName) {
+    throw new Error("MONGODB_DB is unavailable for compare smoke product bootstrap.");
+  }
+
+  const client = await getMongoClient();
+  const productsCollectionName = process.env.MONGODB_PRODUCTS_COLLECTION || "products";
+  const id = createCompareSmokeProductId();
+  const name = "Compare Smoke Product";
+
+  await client
+    .db(mongoDbName)
+    .collection(productsCollectionName)
+    .updateOne(
+      { id },
+      {
+        $set: {
+          id,
+          name,
+          sport: "Running",
+          category: "Accessories",
+          priceCents: 4900,
+          rating: 4.2,
+          reviews: 12,
+          badge: "Smoke",
+          description: "Auto-created compare smoke product for CI stability.",
+          tone: "fitness",
+          stockQuantity: 99,
+          brand: "Prime Athlete",
+          sku: `SMOKE-${id.toUpperCase()}`,
+          tags: ["smoke", "compare", "ci"],
+          sizes: ["One Size"],
+          colors: ["Black"],
+          images: [
+            {
+              src: "/products/photo-01.jpg",
+              alt: "Compare smoke product image",
+              width: 1600,
+              height: 1600,
+            },
+          ],
+          updatedAt: new Date(),
+        },
+        $setOnInsert: {
+          createdAt: new Date(),
+        },
+      },
+      { upsert: true },
+    );
+
+  return { id, name };
+}
+
 async function getCompareSmokeProduct(): Promise<{ id: string; name: string | null }> {
   const mongoDbName = process.env.MONGODB_DB;
   if (!mongoDbName) {
@@ -144,7 +205,11 @@ async function resolveCompareSmokeProduct(
   try {
     return await getCompareSmokeProduct();
   } catch {
-    return getCompareSmokeProductFromShop(api);
+    try {
+      return await getCompareSmokeProductFromShop(api);
+    } catch {
+      return insertCompareSmokeProductInMongo();
+    }
   }
 }
 
