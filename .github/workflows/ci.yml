@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+  test-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: lint
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      MONGODB_URI: mongodb://127.0.0.1:27017/sportiva_ci?directConnection=true
+      MONGODB_DB: sportiva_ci
+      MONGODB_PRODUCTS_COLLECTION: products
+      MONGODB_ORDERS_COLLECTION: orders
+      MONGODB_USERS_COLLECTION: users
+      MONGODB_SESSIONS_COLLECTION: sessions
+      MONGODB_AUTH_TOKENS_COLLECTION: auth_tokens
+      MONGODB_TAXONOMY_COLLECTION: taxonomy
+      MONGODB_ADMIN_ASSIGNMENTS_COLLECTION: admin_assignments
+      MONGODB_ADMIN_AUDIT_COLLECTION: admin_audit_logs
+      MONGODB_ADMIN_RATE_LIMITS_COLLECTION: admin_rate_limits
+      STRIPE_SECRET_KEY: sk_test_ci
+      STRIPE_WEBHOOK_SECRET: whsec_ci
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke suite
+        run: npm run test:e2e
