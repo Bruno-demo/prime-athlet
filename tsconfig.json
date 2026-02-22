@@ -34,14 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts",
-    ".next-viewport-qa/types/**/*.ts",
-    ".next-viewport-qa/dev/types/**/*.ts",
-    ".next-viewport-qa-auth/types/**/*.ts",
-    ".next-viewport-qa-auth/dev/types/**/*.ts",
-    ".next-debug-auth/types/**/*.ts",
-    ".next-debug-auth/dev/types/**/*.ts",
-    ".next/dev/dev/types/**/*.ts"
+    "**/*.mts"
   ],
   "exclude": [
     "node_modules"

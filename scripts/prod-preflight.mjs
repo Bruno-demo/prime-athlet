@@ -187,11 +187,6 @@ function validateAdminSecurity() {
     addError("EXPOSE_AUTH_DEBUG_LINKS must be false in production.");
   }
 
-  const allowSeedFallback = parseBoolean(getEnv("HOMEPAGE_ALLOW_SEED_FALLBACK"));
-  if (allowSeedFallback) {
-    addError("HOMEPAGE_ALLOW_SEED_FALLBACK must be false in production.");
-  }
-
   const encryptionKey = requireEnv("ADMIN_2FA_ENCRYPTION_KEY");
   if (encryptionKey.length < 32) {
     addError("ADMIN_2FA_ENCRYPTION_KEY must be at least 32 characters.");

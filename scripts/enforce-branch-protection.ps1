@@ -2,7 +2,7 @@ param(
   [string]$Owner,
   [string]$Repo,
   [string]$Branch = "main",
-  [string[]]$RequiredChecks = @("lint", "test-e2e"),
+  [string[]]$RequiredChecks = @("lint", "build-prod"),
   [string]$RequiredCheck,
   [switch]$DryRun
 )

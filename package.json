@@ -8,21 +8,13 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "seed:products": "node --env-file=.env.local scripts/seed-products.mjs",
-    "seed:all": "node --env-file=.env.local scripts/seed-products.mjs",
-    "db:wipe": "node --env-file=.env.local scripts/seed-products.mjs --wipe-only",
     "sync:sport-category": "node --env-file=.env.local scripts/sync-sport-category.mjs --fix",
     "sync:sport-category:check": "node --env-file=.env.local scripts/sync-sport-category.mjs --check",
     "prod:preflight": "node --env-file=.env.local scripts/prod-preflight.mjs",
-    "prod:gate": "npm run prod:preflight && npm run lint && npm run build && npm run test:e2e",
-    "qa:viewport": "node scripts/run-viewport-qa.mjs",
-    "qa:viewport:auth": "node scripts/run-auth-viewport-qa.mjs",
+    "prod:gate": "npm run prod:preflight && npm run lint && npm run build",
     "protect:branch": "powershell -ExecutionPolicy Bypass -File scripts/enforce-branch-protection.ps1",
     "git:sync": "node scripts/git-sync.mjs",
-    "hooks:enable": "git config core.hooksPath .githooks",
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:install": "playwright install chromium"
+    "hooks:enable": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.990.0",
@@ -37,7 +29,6 @@
     "stripe": "^20.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",

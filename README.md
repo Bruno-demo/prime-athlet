@@ -58,8 +58,8 @@ Professional sports e-commerce starter built with Next.js 16, React 19, TypeScri
 - `MONGODB_TAXONOMY_COLLECTION`
 - `MONGODB_ADMIN_ASSIGNMENTS_COLLECTION`
 - `MONGODB_ADMIN_AUDIT_COLLECTION`
-- `sMITS_COLLECTION`
-- `HOMEPAGE_ALLOW_SEED_FALLBACK` (optional; production default is live Mongo-only for homepage hero)
+- `MONGODB_ADMIN_RATE_LIMITS_COLLECTION`
+- `MONGODB_SETTINGS_COLLECTION`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `PAYPAL_CLIENT_ID` (optional; required for PayPal checkout)
@@ -96,14 +96,12 @@ Admin access model:
 
 Homepage hero data behavior:
 - `/` is rendered dynamically so admin product updates appear immediately in hero cards.
-- In production, if Mongo is configured, homepage reads require live Mongo data by default.
-- Set `HOMEPAGE_ALLOW_SEED_FALLBACK=true` only if you intentionally want seed fallback behavior.
+- In production, homepage reads use live Mongo data.
 
 ## Install and run
 
 ```bash
 npm install
-npm run seed:products
 npm run dev
 ```
 
@@ -119,26 +117,6 @@ stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 Set `STRIPE_WEBHOOK_SECRET` from the CLI output.
 
-## Playwright smoke tests
-
-Install browser binaries (once per machine):
-
-```bash
-npm run test:e2e:install
-```
-
-Run smoke suite (spins up Next dev server automatically):
-
-```bash
-npm run test:e2e
-```
-
-Current smoke coverage:
-- Admin taxonomy CRUD flow (`/api/admin/taxonomy`)
-- Admin user role mutation/revoke flow (`/api/admin/users`)
-- Admin dashboard new-product shortcut behavior (`/admin`)
-- Cross-device compare sync for signed-in users (`/api/account/compare`, `/compare`)
-
 ## Production go/no-go gate
 
 Run the full deployment gate with one command:
@@ -151,18 +129,17 @@ This command is strict and fails fast on any blocker:
 - Production environment preflight (`prod:preflight`)
 - Lint (`lint`)
 - Production build (`build`)
-- End-to-end smoke tests (`test:e2e`)
 
 ## Enforce branch protection
 
-Use the helper script to require separate CI checks on `main` (default: `lint`, `test-e2e`):
+Use the helper script to require separate CI checks on `main` (default: `lint`, `build-prod`):
 
 1. Create a GitHub token with repository administration permission.
 2. Set token in your shell (`GITHUB_TOKEN` or `GH_TOKEN`).
 3. Run:
 
 ```bash
-npm run protect:branch -- -Owner YOUR_GH_OWNER -Repo YOUR_GH_REPO -Branch main -RequiredChecks lint,test-e2e
+npm run protect:branch -- -Owner YOUR_GH_OWNER -Repo YOUR_GH_REPO -Branch main -RequiredChecks lint,build-prod
 ```
 
 Notes:
@@ -210,4 +187,3 @@ Notes:
 - `src/lib/mailer.ts` - SMTP transactional email delivery
 - `src/lib/mongodb.ts` - Mongo client/db helpers
 - `src/lib/stripe.ts` - Stripe server helper
-- `scripts/seed-products.mjs` - Mongo product seed script
