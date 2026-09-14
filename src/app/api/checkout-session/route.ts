@@ -136,19 +136,21 @@ function parseCheckoutPayload(payload: unknown): ParsedCheckoutPayload | null {
 }
 
 function getRequestOrigin(request: Request): string {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-
   const origin = request.headers.get("origin");
   if (origin) {
-    return origin;
+    return origin.trim().replace(/\/$/, "");
   }
 
-  const host = request.headers.get("host");
-  const proto = request.headers.get("x-forwarded-proto") || "http";
+  const forwardedProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
+    "https";
+  const host = request.headers.get("host")?.trim();
   if (host) {
-    return `${proto}://${host}`;
+    return `${forwardedProto}://${host}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_APP_URL?.trim()) {
+    return process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, "");
   }
 
   return "http://localhost:3000";

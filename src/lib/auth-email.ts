@@ -15,19 +15,21 @@ const EMAIL_VERIFICATION_TTL_SECONDS = 60 * 60 * 24;
 const PASSWORD_RESET_TTL_SECONDS = 60 * 60;
 
 function resolveAppOrigin(request: Request): string {
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-
   const origin = request.headers.get("origin");
   if (origin) {
-    return origin;
+    return origin.trim().replace(/\/$/, "");
   }
 
-  const host = request.headers.get("host");
+  const forwardedProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
+    "https";
+  const host = request.headers.get("host")?.trim();
   if (host) {
-    const proto = request.headers.get("x-forwarded-proto") || "http";
-    return `${proto}://${host}`;
+    return `${forwardedProto}://${host}`;
+  }
+
+  if (process.env.NEXT_PUBLIC_APP_URL?.trim()) {
+    return process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, "");
   }
 
   return "http://localhost:3000";
